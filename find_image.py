@@ -13,8 +13,11 @@ def create_index(rootDir):
 		for filespath in files:
 			if(is_image(filespath)):
 				fullpath = os.path.join(root,filespath)
-				pichash = imagehash.dhash(Image.open(fullpath))
-				images[pichash]=fullpath
+				img = Image.open(fullpath)
+				if(img.format=='PNG'):
+					pichash = imagehash.phash(img)
+					images[pichash]=fullpath
+					print pichash,fullpath
 		dumpfile = open('index.pickle', 'wb')
 		pickle.dump(images, dumpfile)
 
@@ -30,12 +33,10 @@ if __name__ == '__main__':
 		if(not os.path.exists(picpath)):
 			print("image not exists")
 			sys.exit(1)
-		pichash = imagehash.dhash(Image.open(picpath))
+		pichash = imagehash.phash(Image.open(picpath))
 		dumpfile = open('index.pickle', 'rb')
 		images = pickle.load(dumpfile)
 		for key, value in images.iteritems():
-			print key,value
 			if(pichash - key <5):
-				print(pichash - key)
-				print value
+				print(pichash - key),key,value
 
